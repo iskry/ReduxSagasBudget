@@ -4,6 +4,7 @@ import MainHeader from './components/MainHeader';
 import NewEntryForm from './components/NewEntryForm';
 import DisplayBalance from './components/DisplayBalance';
 import DisplayBalances from './components/DisplayBalances';
+import EntryLine from './components/EntryLine';
 
 function App() {
   return (
@@ -12,46 +13,11 @@ function App() {
         <MainHeader title='Budget'/>
         <DisplayBalance title='Your Balance' value='2,550.53' size='small' />
         <DisplayBalances />
-      <MainHeader title='History' type='h3'/>
-      <Segment color='red'>
-        <Grid columns={3} textAlign='right'>
-          <Grid.Row>
-            <Grid.Column width={10} textAlign='left'>Something</Grid.Column>
-            <Grid.Column width={3} textAlign='right'>$10.00</Grid.Column>
-            <Grid.Column width={3}>
-              <Icon name='edit' bordered/>
-              <Icon name='trash' boredered/>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Segment>
-      <Segment color='green'>
-        <Grid columns={3} textAlign='right'>
-          <Grid.Row>
-            <Grid.Column width={10} textAlign='left'>Something Else</Grid.Column>
-            <Grid.Column width={3} textAlign='right'>$100.00</Grid.Column>
-            <Grid.Column width={3}>
-              <Icon name='edit' bordered/>
-              <Icon name='trash' boredered/>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Segment>
-      <Segment color='red'>
-        <Grid columns={3} textAlign='right'>
-          <Grid.Row>
-            <Grid.Column width={10} textAlign='left'>Something</Grid.Column>
-            <Grid.Column width={3} textAlign='right'>$20.00</Grid.Column>
-            <Grid.Column width={3}>
-              <Icon name='edit' bordered/>
-              <Icon name='trash' boredered/>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Segment>
-
-      <MainHeader title='Add New Transaction' type='h3'/>
-
+        <MainHeader title='History' type='h3'/>
+        <EntryLine description='Something' value='$10.00' isExpense='true'/>
+        <EntryLine description='Something Else' value='$100.00' />
+        <EntryLine description='Something' value='$20.00' isExpense='true'/>
+        <MainHeader title='Add New Transaction' type='h3'/>
         <NewEntryForm />
       </Container>
 
