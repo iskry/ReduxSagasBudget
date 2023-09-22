@@ -1,4 +1,4 @@
-import { Container, Grid, Header, Segment, Statistic, Icon, Form, Button} from 'semantic-ui-react';
+import { Container }  from 'semantic-ui-react';
 import './App.css';
 import MainHeader from './components/MainHeader';
 import NewEntryForm from './components/NewEntryForm';
