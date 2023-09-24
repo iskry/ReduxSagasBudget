@@ -10,6 +10,15 @@ import EntryLines from './components/EntryLines';
 
 function App() {
   const [entries, setEntries] = useState(initialEntries);
+
+  function deleteEntry(id) {
+    const result = entries.filter(entry => entry.id !== id);
+    console.log(result);
+    console.log(entries);
+    setEntries(result);
+
+  }
+
   return (
 
       <Container>
@@ -17,7 +26,7 @@ function App() {
         <DisplayBalance title='Your Balance' value='2,550.53' size='small' />
         <DisplayBalances />
         <MainHeader title='History' type='h3'/>
-        <EntryLines entries={entries}/>
+        <EntryLines entries={entries} deleteEntry={deleteEntry}/>
         <MainHeader title='Add New Transaction' type='h3'/>
         <NewEntryForm />
       </Container>
@@ -29,21 +38,25 @@ export default App;
 
 var initialEntries = [
   {
+    id: 1,
     description: 'Work Income',
     value: '$1000.00',
     isExpense: false
   },
   {
+    id: 2,
     description: 'Water Bill',
     value: '$20.00',
     isExpense: true
   },
   {
+    id: 3,
     description: 'Rent',
     value: '$300.00',
     isExpense: true
   },
   {
+    id: 4,
     description: 'Power Bill',
     value: '$50.00',
     isExpense: true
