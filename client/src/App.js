@@ -13,12 +13,19 @@ function App() {
 
   function deleteEntry(id) {
     const result = entries.filter(entry => entry.id !== id);
-    console.log(result);
-    console.log(entries);
     setEntries(result);
 
   }
 
+  function addEntry(description, value, isExpense) {
+    const result = entries.concat({
+      id: entries.length + 1,
+      description,
+      value,
+      isExpense
+    });
+    setEntries(result);
+  }
   return (
 
       <Container>
@@ -28,7 +35,7 @@ function App() {
         <MainHeader title='History' type='h3'/>
         <EntryLines entries={entries} deleteEntry={deleteEntry}/>
         <MainHeader title='Add New Transaction' type='h3'/>
-        <NewEntryForm />
+        <NewEntryForm addEntry={addEntry} />
       </Container>
 
   );
