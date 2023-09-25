@@ -65,9 +65,11 @@ function App() {
   const store = createStore((state = entries, action) => { 
     switch (action.type) {
       case 'ADD_ENTRY':
-        state = [...state, action.payload];
+        state = [...state, action.payload_add];
         break;
-
+      case 'REMOVE_ENTRY':
+        state = state.filter((entry) => entry.id !== action.payload_remove.id); 
+        break;
       default:
         return state;
     }
@@ -77,10 +79,14 @@ function App() {
   store.subscribe(() => {
     console.log('store changed', store.getState())});
 
-  const payload = {id: 6, description: 'test', value: 3310, isExpense: false}
+  const payload_add = {id: 6, description: 'test', value: 3310, isExpense: false}
 
-  store.dispatch({type: 'ADD_ENTRY', payload});
-  store.dispatch({type: 'ADD_ENTRY', payload});
+  const payload_remove = {id: 1}
+
+  store.dispatch({type: 'ADD_ENTRY', payload_add});
+  store.dispatch({type: 'REMOVE_ENTRY', payload_remove});
+
+
 
   const deleteEntry = async (id) => {
     try {
