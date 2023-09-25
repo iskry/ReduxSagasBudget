@@ -1,20 +1,10 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./database');
+const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
-const Entry = sequelize.define('Entry', {
-  description: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  value: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
-  isExpense: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-  },
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+  host: process.env.DB_HOST,
+  dialect: 'mysql'
 });
 
-module.exports = Entry;
+module.exports = sequelize;
 
