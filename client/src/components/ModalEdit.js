@@ -1,6 +1,6 @@
 import React from 'react'
 import {Modal, Button} from 'semantic-ui-react'
-import EntryForm from './NewEntryForm'
+import EntryForm from './EntryForm'
 
 function ModalEdit({
   isOpen, 
