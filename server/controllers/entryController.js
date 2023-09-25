@@ -1,4 +1,4 @@
-const Entry = require('../models/entryModel.js');
+const { Entry } = require('../models');
 
 exports.createEntry = async (req, res) => {
   try {
