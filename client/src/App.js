@@ -22,6 +22,18 @@ function App() {
 
   }
 
+  function editEntry(id) {
+    console.log(`edit entry ${id}`);
+    if (id) {
+      const index = entries.findIndex(entry => entry.id === id);
+      const entry = entries[index];
+      setDescription(entry.description);
+      setValue(entry.value);
+      setIsExpense(entry.isExpense);
+      setIsOpen(true);
+    }
+  }
+
   function addEntry(description, value, isExpense) {
     const result = entries.concat({
       id: entries.length + 1,
@@ -38,7 +50,12 @@ function App() {
         <DisplayBalance title='Your Balance' value='2,550.53' size='small' />
         <DisplayBalances />
         <MainHeader title='History' type='h3'/>
-        <EntryLines entries={entries} deleteEntry={deleteEntry} setIsOpen={setIsOpen}/>
+        <EntryLines 
+          entries={entries}
+          deleteEntry={deleteEntry}
+          editEntry={editEntry}
+          setIsOpen={setIsOpen}
+        />
         <MainHeader title='Add New Transaction' type='h3'/>
         <NewEntryForm 
         addEntry={addEntry}
@@ -49,7 +66,17 @@ function App() {
         setValue={setValue}
         setIsExpense={setIsExpense}
       />
-      <ModalEdit isOpen={isOpen} setIsOpen={setIsOpen}/>
+      <ModalEdit 
+        isOpen={isOpen} 
+        setIsOpen={setIsOpen}
+        addEntry={addEntry}
+        description={description}
+        value={value}
+        isExpense={isExpense}
+        setDescription={setDescription}
+        setValue={setValue}
+        setIsExpense={setIsExpense}
+      />
       </Container>
 
   );
