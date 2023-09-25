@@ -1,5 +1,6 @@
-import React, {useEffect, useState } from 'react';
-import { Container }  from 'semantic-ui-react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios'; 
+import { Container } from 'semantic-ui-react';
 import './App.css';
 import MainHeader from './components/MainHeader';
 import NewEntryForm from './components/NewEntryForm';
@@ -7,10 +8,9 @@ import DisplayBalance from './components/DisplayBalance';
 import DisplayBalances from './components/DisplayBalances';
 import EntryLines from './components/EntryLines';
 import ModalEdit from './components/ModalEdit';
-import {createStore} from 'redux';
 
 function App() {
-  const [entries, setEntries] = useState(initialEntries);
+  const [entries, setEntries] = useState([]);
   const [description, setDescription] = useState('');
   const [value, setValue] = useState('');
   const [isExpense, setIsExpense] = useState(true);
@@ -21,106 +21,105 @@ function App() {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    if (!isOpen && entryId) {
-      const index = entries.findIndex(entry => entry.id === entryId);
-      const newEntries = [...entries];
-      newEntries[index].description = description;
-      newEntries[index].value = value;
-      newEntries[index].isExpense = isExpense;
-      setEntries(newEntries);
-      resetEntry();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen]);
-  
+    const fetchEntries = async () => {
+      try {
+        const res = await axios.get('http://localhost:3001/entries'); 
+        setEntries(res.data);
+      } catch (err) {
+        console.error('Error fetching entries', err);
+      }
+    };
+    fetchEntries();
+  }, []);
+
   useEffect(() => {
     let totalIncomes = 0;
     let totalExpenses = 0;
-
-    entries.map((entry) => {
+    entries.forEach((entry) => {
       if (entry.isExpense) {
-        return (totalExpenses += Number(entry.value));
-      } 
-        return (totalIncomes += Number(entry.value));
+        totalExpenses += Number(entry.value);
+      } else {
+        totalIncomes += Number(entry.value);
+      }
     });
     setTotal(totalIncomes - totalExpenses);
     setExpenseTotal(totalExpenses);
     setIncomeTotal(totalIncomes);
   }, [entries]);
 
-  const store = createStore((state = initialEntries) => {
-    return state;
-  }
-);
+  const addEntry = async () => {
+    try {
+      const res = await axios.post('http://localhost:3001/entries', {
+        description,
+        value,
+        isExpense,
+      });
+      setEntries([...entries, res.data]);
+      resetEntry();
+    } catch (err) {
+      console.error('Error adding entry', err);
+    }
+  };
 
-console.log('store: ',store.getState());
+  const deleteEntry = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3001/entries/${id}`);
+      setEntries(entries.filter((entry) => entry.id !== id));
+    } catch (err) {
+      console.error('Error deleting entry', err);
+    }
+  };
 
-
-  function deleteEntry(id) {
-    const result = entries.filter(entry => entry.id !== id);
-    setEntries(result);
-
-  }
-
-  function editEntry(id) {
-    console.log(`edit entry ${id}`);
+  const editEntry = async (id) => {
     if (id) {
-      const index = entries.findIndex(entry => entry.id === id);
-      const entry = entries[index];
+      const entry = entries.find((entry) => entry.id === id);
       setEntryId(id);
       setDescription(entry.description);
       setValue(entry.value);
       setIsExpense(entry.isExpense);
-      setIsOpen(true);
+      setIsOpen(true); 
     }
-  }
+  };
 
-  function addEntry() {
-    const result = entries.concat({
-      id: entries.length + 1,
-      description,
-      value,
-      isExpense
-    });
-    setEntries(result);
-    resetEntry();
-  }
+  const updateEntry = async () => {
+    try {
+      const res = await axios.put(`http://localhost:3001/entries/${entryId}`, {
+        description,
+        value,
+        isExpense,
+      });
+      const updatedEntries = entries.map((entry) =>
+        entry.id === entryId ? res.data : entry
+      );
+      setEntries(updatedEntries);
+      resetEntry();
+      setIsOpen(false); 
+    } catch (err) {
+      console.error('Error updating entry', err);
+    }
+  };
 
-  function resetEntry() {
+  const resetEntry = () => {
     setDescription('');
     setValue('');
     setIsExpense(true);
-  }
+    setIsOpen(false); 
+  };
 
   return (
-
-      <Container>
-        <MainHeader title='Budget'/>
-        <DisplayBalance title='Your Balance' value={total} size='small' />
-        <DisplayBalances
-          incomeTotal={incomeTotal}
-          expenseTotal={expenseTotal}
-          />
-        <MainHeader title='History' type='h3'/>
-        <EntryLines 
-          entries={entries}
-          deleteEntry={deleteEntry}
-          editEntry={editEntry}
-          setIsOpen={setIsOpen}
-        />
-        <MainHeader title='Add New Transaction' type='h3'/>
-        <NewEntryForm 
-        addEntry={addEntry}
-        description={description}
-        value={value}
-        isExpense={isExpense}
-        setDescription={setDescription}
-        setValue={setValue}
-        setIsExpense={setIsExpense}
-      />
-      <ModalEdit 
-        isOpen={isOpen} 
+    <Container>
+      <MainHeader title='Budget' />
+      <DisplayBalance title='Your Balance' value={total} size='small' />
+      <DisplayBalances incomeTotal={incomeTotal} expenseTotal={expenseTotal} />
+      <MainHeader title='History' type='h3' />
+      <EntryLines
+        entries={entries}
+        deleteEntry={deleteEntry}
+        editEntry={editEntry}
         setIsOpen={setIsOpen}
+      />
+      <MainHeader title='Add New Transaction' type='h3' />
+      <NewEntryForm
         addEntry={addEntry}
         description={description}
         value={value}
@@ -129,36 +128,20 @@ console.log('store: ',store.getState());
         setValue={setValue}
         setIsExpense={setIsExpense}
       />
-      </Container>
-
+      <ModalEdit
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        updateEntry={updateEntry}
+        description={description}
+        value={value}
+        isExpense={isExpense}
+        setDescription={setDescription}
+        setValue={setValue}
+        setIsExpense={setIsExpense}
+      />
+    </Container>
   );
 }
 
 export default App;
 
-var initialEntries = [
-  {
-    id: 1,
-    description: 'Work Income',
-    value: 1000.0,
-    isExpense: false
-  },
-  {
-    id: 2,
-    description: 'Water Bill',
-    value: 20.0,
-    isExpense: true
-  },
-  {
-    id: 3,
-    description: 'Rent',
-    value: 300,
-    isExpense: true
-  },
-  {
-    id: 4,
-    description: 'Power Bill',
-    value: 50,
-    isExpense: true
-  },
-]

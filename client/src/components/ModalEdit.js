@@ -5,6 +5,7 @@ import EntryForm from './EntryForm'
 function ModalEdit({
   isOpen, 
   setIsOpen,
+  updateEntry,
   description,
   value,
   isExpense,
@@ -12,6 +13,12 @@ function ModalEdit({
   setValue,
   setIsExpense
 }) {
+
+  const handleUpdateEntry = () => {
+    updateEntry()
+    setIsOpen(false)
+  }
+
   return (
     <Modal open={isOpen}>
      <Modal.Header>Edit Entry</Modal.Header> 
@@ -27,7 +34,7 @@ function ModalEdit({
       </Modal.Content>
       <Modal.Actions>
         <Button onClick={() => setIsOpen(false)}>Close</Button>
-        <Button onClick={() => setIsOpen(false)} primary>Ok</Button>
+        <Button onClick={handleUpdateEntry} primary>Ok</Button> 
       </Modal.Actions>
     </Modal>
   )
