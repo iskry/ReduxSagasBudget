@@ -8,6 +8,7 @@ import DisplayBalance from './components/DisplayBalance';
 import DisplayBalances from './components/DisplayBalances';
 import EntryLines from './components/EntryLines';
 import ModalEdit from './components/ModalEdit';
+import { createStore } from 'redux';
 
 function App() {
   const [entries, setEntries] = useState([]);
@@ -60,6 +61,26 @@ function App() {
       console.error('Error adding entry', err);
     }
   };
+
+  const store = createStore((state = entries, action) => { 
+    switch (action.type) {
+      case 'ADD_ENTRY':
+        state = [...state, action.payload];
+        break;
+
+      default:
+        return state;
+    }
+    return state;
+  });
+ 
+  store.subscribe(() => {
+    console.log('store changed', store.getState())});
+
+  const payload = {id: 6, description: 'test', value: 3310, isExpense: false}
+
+  store.dispatch({type: 'ADD_ENTRY', payload});
+  store.dispatch({type: 'ADD_ENTRY', payload});
 
   const deleteEntry = async (id) => {
     try {
