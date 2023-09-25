@@ -1,5 +1,6 @@
 const express = require('express');
-const entryRoutes = require('./routes/entryRoutes');
+const entryController = require('../controllers/entryController');
+
 
 const router = express.Router();
 
