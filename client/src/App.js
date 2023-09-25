@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import { Container }  from 'semantic-ui-react';
 import './App.css';
 import MainHeader from './components/MainHeader';
@@ -14,7 +14,20 @@ function App() {
   const [description, setDescription] = useState('');
   const [value, setValue] = useState('');
   const [isExpense, setIsExpense] = useState(true);
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [entryId, setEntryId] = useState();
+  
+  useEffect(() => {
+    if (!isOpen && entryId) {
+      const index = entries.findIndex(entry => entry.id === entryId);
+      const newEntries = [...entries];
+      newEntries[index].description = description;
+      newEntries[index].value = value;
+      newEntries[index].isExpense = isExpense;
+      setEntries(newEntries);
+    }
+    }, [isOpen]);
+
 
   function deleteEntry(id) {
     const result = entries.filter(entry => entry.id !== id);
@@ -27,6 +40,7 @@ function App() {
     if (id) {
       const index = entries.findIndex(entry => entry.id === id);
       const entry = entries[index];
+      setEntryId(id);
       setDescription(entry.description);
       setValue(entry.value);
       setIsExpense(entry.isExpense);
