@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios'; 
-import { Container } from 'semantic-ui-react';
-import './App.css';
-import MainHeader from './components/MainHeader';
-import NewEntryForm from './components/NewEntryForm';
-import DisplayBalance from './components/DisplayBalance';
-import DisplayBalances from './components/DisplayBalances';
-import EntryLines from './components/EntryLines';
-import ModalEdit from './components/ModalEdit';
-import { createStore } from 'redux';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Container } from "semantic-ui-react";
+import "./App.css";
+import MainHeader from "./components/MainHeader";
+import NewEntryForm from "./components/NewEntryForm";
+import DisplayBalance from "./components/DisplayBalance";
+import DisplayBalances from "./components/DisplayBalances";
+import EntryLines from "./components/EntryLines";
+import ModalEdit from "./components/ModalEdit";
+import { createStore, combineReducers } from "redux";
 
 function App() {
   const [entries, setEntries] = useState([]);
-  const [description, setDescription] = useState('');
-  const [value, setValue] = useState('');
+  const [description, setDescription] = useState("");
+  const [value, setValue] = useState("");
   const [isExpense, setIsExpense] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [entryId, setEntryId] = useState();
@@ -24,10 +24,10 @@ function App() {
   useEffect(() => {
     const fetchEntries = async () => {
       try {
-        const res = await axios.get('http://localhost:3001/entries'); 
+        const res = await axios.get("http://localhost:3001/entries");
         setEntries(res.data);
       } catch (err) {
-        console.error('Error fetching entries', err);
+        console.error("Error fetching entries", err);
       }
     };
     fetchEntries();
@@ -50,7 +50,7 @@ function App() {
 
   const addEntry = async () => {
     try {
-      const res = await axios.post('http://localhost:3001/entries', {
+      const res = await axios.post("http://localhost:3001/entries", {
         description,
         value,
         isExpense,
@@ -58,42 +58,57 @@ function App() {
       setEntries([...entries, res.data]);
       resetEntry();
     } catch (err) {
-      console.error('Error adding entry', err);
+      console.error("Error adding entry", err);
     }
   };
 
-  const store = createStore((state = entries, action) => { 
+  function entriesReducer(state = entries, action) {
     switch (action.type) {
-      case 'ADD_ENTRY':
-        state = [...state, action.payload_add];
+      case "ADD_ENTRY":
+        if (action.payload) state = [...state, action.payload];
         break;
-      case 'REMOVE_ENTRY':
-        state = state.filter((entry) => entry.id !== action.payload_remove.id); 
+      case "REMOVE_ENTRY":
+        if (action.payload && action.payload.id)
+          state = state.filter((entry) => entry.id !== action.payload.id);
         break;
       default:
         return state;
     }
     return state;
+  }
+
+  const combinedReducers = combineReducers({
+    entries: entriesReducer,
   });
- 
+  const store = createStore(combinedReducers);
+
   store.subscribe(() => {
-    console.log('store changed', store.getState())});
+    console.log("store changed", store.getState());
+  });
 
-  const payload_add = {id: 6, description: 'test', value: 3310, isExpense: false}
+  const payload_add = {
+    id: 6,
+    description: "test",
+    value: 3310,
+    isExpense: false,
+  };
 
-  const payload_remove = {id: 1}
+  function addEntryRedux(payload) {
+    return { type: "ADD_ENTRY", payload };
+  }
 
-  store.dispatch({type: 'ADD_ENTRY', payload_add});
-  store.dispatch({type: 'REMOVE_ENTRY', payload_remove});
-
-
+  function removeEntryRedux(id) {
+    return { type: "REMOVE_ENTRY", payload: { id } };
+  }
+  store.dispatch(addEntryRedux(payload_add));
+  store.dispatch(removeEntryRedux(1));
 
   const deleteEntry = async (id) => {
     try {
       await axios.delete(`http://localhost:3001/entries/${id}`);
       setEntries(entries.filter((entry) => entry.id !== id));
     } catch (err) {
-      console.error('Error deleting entry', err);
+      console.error("Error deleting entry", err);
     }
   };
 
@@ -104,7 +119,7 @@ function App() {
       setDescription(entry.description);
       setValue(entry.value);
       setIsExpense(entry.isExpense);
-      setIsOpen(true); 
+      setIsOpen(true);
     }
   };
 
@@ -120,32 +135,32 @@ function App() {
       );
       setEntries(updatedEntries);
       resetEntry();
-      setIsOpen(false); 
+      setIsOpen(false);
     } catch (err) {
-      console.error('Error updating entry', err);
+      console.error("Error updating entry", err);
     }
   };
 
   const resetEntry = () => {
-    setDescription('');
-    setValue('');
+    setDescription("");
+    setValue("");
     setIsExpense(true);
-    setIsOpen(false); 
+    setIsOpen(false);
   };
 
   return (
     <Container>
-      <MainHeader title='Budget' />
-      <DisplayBalance title='Your Balance' value={total} size='small' />
+      <MainHeader title="Budget" />
+      <DisplayBalance title="Your Balance" value={total} size="small" />
       <DisplayBalances incomeTotal={incomeTotal} expenseTotal={expenseTotal} />
-      <MainHeader title='History' type='h3' />
+      <MainHeader title="History" type="h3" />
       <EntryLines
         entries={entries}
         deleteEntry={deleteEntry}
         editEntry={editEntry}
         setIsOpen={setIsOpen}
       />
-      <MainHeader title='Add New Transaction' type='h3' />
+      <MainHeader title="Add New Transaction" type="h3" />
       <NewEntryForm
         addEntry={addEntry}
         description={description}
@@ -171,4 +186,3 @@ function App() {
 }
 
 export default App;
-
