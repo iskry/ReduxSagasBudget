@@ -9,9 +9,9 @@ import DisplayBalances from "./components/DisplayBalances";
 import EntryLines from "./components/EntryLines";
 import ModalEdit from "./components/ModalEdit";
 import { useSelector, useDispatch } from "react-redux";
+import { addEntryRedux, removeEntryRedux } from "./actions/entries.actions";
 
 function App() {
-  const [entries, setEntries] = useState([]);
   const [description, setDescription] = useState("");
   const [value, setValue] = useState("");
   const [isExpense, setIsExpense] = useState(true);
@@ -20,35 +20,10 @@ function App() {
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [expenseTotal, setExpenseTotal] = useState(0);
   const [total, setTotal] = useState(0);
+  const dispatch = useDispatch();
   const entriesRedux = useSelector((state) => state.entries);
 
-  useEffect(() => {
-    const fetchEntries = async () => {
-      try {
-        const res = await axios.get("http://localhost:3001/entries");
-        setEntries(res.data);
-      } catch (err) {
-        console.error("Error fetching entries", err);
-      }
-    };
-    fetchEntries();
-  }, []);
-
-  useEffect(() => {
-    let totalIncomes = 0;
-    let totalExpenses = 0;
-    entries.forEach((entry) => {
-      if (entry.isExpense) {
-        totalExpenses += Number(entry.value);
-      } else {
-        totalIncomes += Number(entry.value);
-      }
-    });
-    setTotal(totalIncomes - totalExpenses);
-    setExpenseTotal(totalExpenses);
-    setIncomeTotal(totalIncomes);
-  }, [entries]);
-
+  console.log(entriesRedux);
   const addEntry = async () => {
     try {
       const res = await axios.post("http://localhost:3001/entries", {
@@ -56,7 +31,7 @@ function App() {
         value,
         isExpense,
       });
-      setEntries([...entries, res.data]);
+      dispatch(addEntryRedux(res.data));
       resetEntry();
     } catch (err) {
       console.error("Error adding entry", err);
@@ -66,7 +41,7 @@ function App() {
   const deleteEntry = async (id) => {
     try {
       await axios.delete(`http://localhost:3001/entries/${id}`);
-      setEntries(entries.filter((entry) => entry.id !== id));
+      dispatch(removeEntryRedux(id));
     } catch (err) {
       console.error("Error deleting entry", err);
     }
@@ -74,7 +49,7 @@ function App() {
 
   const editEntry = async (id) => {
     if (id) {
-      const entry = entries.find((entry) => entry.id === id);
+      const entry = entriesRedux.find((entry) => entry.id === id);
       setEntryId(id);
       setDescription(entry.description);
       setValue(entry.value);
@@ -90,16 +65,43 @@ function App() {
         value,
         isExpense,
       });
-      const updatedEntries = entries.map((entry) =>
+      const updatedEntries = entriesRedux.map((entry) =>
         entry.id === entryId ? res.data : entry
       );
-      setEntries(updatedEntries);
+      dispatch({ type: "UPDATE_ENTRIES", payload: updatedEntries });
       resetEntry();
       setIsOpen(false);
     } catch (err) {
       console.error("Error updating entry", err);
     }
   };
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/entries");
+        dispatch({ type: "SET_ENTRIES", payload: res.data });
+      } catch (err) {
+        console.error("Error fetching entries", err);
+      }
+    };
+    fetchEntries();
+  }, [dispatch]);
+
+  useEffect(() => {
+    let totalIncomes = 0;
+    let totalExpenses = 0;
+    entriesRedux.forEach((entry) => {
+      if (entry.isExpense) {
+        totalExpenses += Number(entry.value);
+      } else {
+        totalIncomes += Number(entry.value);
+      }
+    });
+    setTotal(totalIncomes - totalExpenses);
+    setExpenseTotal(totalExpenses);
+    setIncomeTotal(totalIncomes);
+  }, [entriesRedux]);
 
   const resetEntry = () => {
     setDescription("");
@@ -115,7 +117,7 @@ function App() {
       <DisplayBalances incomeTotal={incomeTotal} expenseTotal={expenseTotal} />
       <MainHeader title="History" type="h3" />
       <EntryLines
-        entries={entries}
+        entries={entriesRedux}
         deleteEntry={deleteEntry}
         editEntry={editEntry}
         setIsOpen={setIsOpen}
