@@ -117,7 +117,6 @@ function App() {
       <MainHeader title="History" type="h3" />
       <EntryLines
         entries={entries}
-        deleteEntry={deleteEntry}
         editEntry={editEntry}
         setIsOpen={setIsOpen}
       />
