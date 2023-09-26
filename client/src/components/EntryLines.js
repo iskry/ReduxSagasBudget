@@ -2,14 +2,7 @@ import React from "react";
 import { Container } from "semantic-ui-react";
 import EntryLine from "./EntryLine";
 
-function EntryLines({
-  entriesRedux,
-  entries,
-  deleteEntry,
-  editEntry,
-  setIsOpen,
-}) {
-  console.log(entriesRedux);
+function EntryLines({ entries, deleteEntry, editEntry, setIsOpen }) {
   return (
     <Container>
       {entries.map((entry) => (

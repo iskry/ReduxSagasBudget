@@ -21,9 +21,8 @@ function App() {
   const [expenseTotal, setExpenseTotal] = useState(0);
   const [total, setTotal] = useState(0);
   const dispatch = useDispatch();
-  const entriesRedux = useSelector((state) => state.entries);
+  const entries = useSelector((state) => state.entries);
 
-  console.log(entriesRedux);
   const addEntry = async () => {
     try {
       const res = await axios.post("http://localhost:3001/entries", {
@@ -49,7 +48,7 @@ function App() {
 
   const editEntry = async (id) => {
     if (id) {
-      const entry = entriesRedux.find((entry) => entry.id === id);
+      const entry = entries.find((entry) => entry.id === id);
       setEntryId(id);
       setDescription(entry.description);
       setValue(entry.value);
@@ -65,7 +64,7 @@ function App() {
         value,
         isExpense,
       });
-      const updatedEntries = entriesRedux.map((entry) =>
+      const updatedEntries = entries.map((entry) =>
         entry.id === entryId ? res.data : entry
       );
       dispatch({ type: "UPDATE_ENTRIES", payload: updatedEntries });
@@ -91,7 +90,7 @@ function App() {
   useEffect(() => {
     let totalIncomes = 0;
     let totalExpenses = 0;
-    entriesRedux.forEach((entry) => {
+    entries.forEach((entry) => {
       if (entry.isExpense) {
         totalExpenses += Number(entry.value);
       } else {
@@ -101,7 +100,7 @@ function App() {
     setTotal(totalIncomes - totalExpenses);
     setExpenseTotal(totalExpenses);
     setIncomeTotal(totalIncomes);
-  }, [entriesRedux]);
+  }, [entries]);
 
   const resetEntry = () => {
     setDescription("");
@@ -117,7 +116,7 @@ function App() {
       <DisplayBalances incomeTotal={incomeTotal} expenseTotal={expenseTotal} />
       <MainHeader title="History" type="h3" />
       <EntryLines
-        entries={entriesRedux}
+        entries={entries}
         deleteEntry={deleteEntry}
         editEntry={editEntry}
         setIsOpen={setIsOpen}
