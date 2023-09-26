@@ -1,7 +1,14 @@
 import axios from "axios";
 
 export const addEntryRedux = (payload) => {
-  return { type: "ADD_ENTRY", payload };
+  return async (dispatch) => {
+    try {
+      const res = await axios.post("http://localhost:3001/entries", payload);
+      dispatch({ type: "ADD_ENTRY", payload: res.data });
+    } catch (err) {
+      console.error("Error adding entry", err);
+    }
+  };
 };
 
 export const removeEntryRedux = (id) => {

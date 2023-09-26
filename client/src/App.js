@@ -37,15 +37,6 @@ function App() {
     }
   };
 
-  const deleteEntry = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3001/entries/${id}`);
-      dispatch(removeEntryRedux(id));
-    } catch (err) {
-      console.error("Error deleting entry", err);
-    }
-  };
-
   const editEntry = async (id) => {
     if (id) {
       const entry = entries.find((entry) => entry.id === id);
