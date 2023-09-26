@@ -8,6 +8,7 @@ import DisplayBalance from "./components/DisplayBalance";
 import DisplayBalances from "./components/DisplayBalances";
 import EntryLines from "./components/EntryLines";
 import ModalEdit from "./components/ModalEdit";
+import { useSelector, useDispatch } from "react-redux";
 
 function App() {
   const [entries, setEntries] = useState([]);
@@ -19,6 +20,7 @@ function App() {
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [expenseTotal, setExpenseTotal] = useState(0);
   const [total, setTotal] = useState(0);
+  const entriesRedux = useSelector((state) => state.entries);
 
   useEffect(() => {
     const fetchEntries = async () => {
