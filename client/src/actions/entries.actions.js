@@ -7,6 +7,7 @@ export const addEntryRedux = (payload) => {
       dispatch({ type: "ADD_ENTRY", payload: res.data });
     } catch (err) {
       console.error("Error adding entry", err);
+      console.error("Error Response", err.response.data);
     }
   };
 };
