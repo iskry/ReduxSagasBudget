@@ -8,7 +8,6 @@ import DisplayBalance from "./components/DisplayBalance";
 import DisplayBalances from "./components/DisplayBalances";
 import EntryLines from "./components/EntryLines";
 import ModalEdit from "./components/ModalEdit";
-import { createStore, combineReducers } from "redux";
 
 function App() {
   const [entries, setEntries] = useState([]);
@@ -61,47 +60,6 @@ function App() {
       console.error("Error adding entry", err);
     }
   };
-
-  function entriesReducer(state = entries, action) {
-    switch (action.type) {
-      case "ADD_ENTRY":
-        if (action.payload) state = [...state, action.payload];
-        break;
-      case "REMOVE_ENTRY":
-        if (action.payload && action.payload.id)
-          state = state.filter((entry) => entry.id !== action.payload.id);
-        break;
-      default:
-        return state;
-    }
-    return state;
-  }
-
-  const combinedReducers = combineReducers({
-    entries: entriesReducer,
-  });
-  const store = createStore(combinedReducers);
-
-  store.subscribe(() => {
-    console.log("store changed", store.getState());
-  });
-
-  const payload_add = {
-    id: 6,
-    description: "test",
-    value: 3310,
-    isExpense: false,
-  };
-
-  function addEntryRedux(payload) {
-    return { type: "ADD_ENTRY", payload };
-  }
-
-  function removeEntryRedux(id) {
-    return { type: "REMOVE_ENTRY", payload: { id } };
-  }
-  store.dispatch(addEntryRedux(payload_add));
-  store.dispatch(removeEntryRedux(1));
 
   const deleteEntry = async (id) => {
     try {

@@ -1,4 +1,4 @@
-export default (state = entries, action) => {
+const reducer = (state = entries, action) => {
   switch (action.type) {
     case "ADD_ENTRY":
       if (action.payload) state = [...state, action.payload];
@@ -12,3 +12,5 @@ export default (state = entries, action) => {
   }
   return state;
 };
+
+export default reducer;
